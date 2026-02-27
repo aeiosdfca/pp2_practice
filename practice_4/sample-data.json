@@ -1,0 +1,14 @@
+{
+    "eats": ["oats", "wheat", "rice"],
+
+    "event": "Conference",
+    "date": "2025-08-25T09:00:00Z",
+
+    "threshold": 0.05,
+    "values": [3, 7, 9, 2],
+    "settings": {
+        "maxValue": 10,
+        "roundResults": true
+    }
+}
+
