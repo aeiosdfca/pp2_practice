@@ -3,7 +3,7 @@ pygame.init()
 
 WIDTH, HEIGHT = 500, 400
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Simple Paint")
+pygame.display.set_caption("Paint")
 clock = pygame.time.Clock()
 
 canvas = []  
