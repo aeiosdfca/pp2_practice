@@ -68,11 +68,11 @@ while running:
 
 
     if (head_x < 0 or head_x >= WIDTH or head_y < 0 or head_y >= HEIGHT):
-        print("Snake hit wall! Final Score:", score)
+        print("snake ate the wall... unacceptable. score", score)
         running = False
 
     if new_head in snake[1:]:
-        print("Snake collided with itself! Final Score:", score)
+        print("snake ate itself... score:", score)
         running = False
 
     for food in foods[:]:
