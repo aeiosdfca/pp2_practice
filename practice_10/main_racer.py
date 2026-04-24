@@ -24,7 +24,7 @@ coins = []
 
 score = 0
 COINS_TO_SPEEDUP = 5  
-speedup_factor = 1.5
+speedup_factor = 15
 
 coin_types = [1, 3]
 coin_weights = [80, 20] 
@@ -75,7 +75,7 @@ while running:
             coins.remove(c)
 
     if score >= COINS_TO_SPEEDUP:
-        FPS = int(FPS * speedup_factor)
+        FPS = int(FPS + speedup_factor)
         for e in enemy_list:
             e[2] = enemy_speed
         COINS_TO_SPEEDUP += COINS_TO_SPEEDUP  
