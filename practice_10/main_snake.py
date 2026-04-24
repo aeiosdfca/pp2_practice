@@ -3,7 +3,7 @@ pygame.init()
 
 WIDTH, HEIGHT = 400, 400
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Snake with Timed Foods")
+pygame.display.set_caption("Snake")
 clock = pygame.time.Clock()
 FPS = 10
 
