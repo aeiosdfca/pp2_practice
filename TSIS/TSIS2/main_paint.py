@@ -38,6 +38,8 @@ def draw_all():
         elif typ == "Text":
             surf = font.render(pts, True, col)
             canvas_surface.blit(surf, item['pos'])
+        elif typ == "Fill":
+            flood_fill(canvas_surface, pts[0], pts[1], col)
 
 def flood_fill(surface, x, y, new_color, old_color=None):
     if old_color is None:
@@ -110,24 +112,25 @@ while True:
                 elif event.key == pygame.K_3:
                     brush_size = 3
                 elif event.key == pygame.K_4:
-                    color = (255, 0, 0)  # Red
+                    color = (255, 0, 0)  # red
                 elif event.key == pygame.K_5:
-                    color = (0, 255, 0)  # Green
+                    color = (0, 255, 0)  # green
                 elif event.key == pygame.K_6:
-                    color = (0, 0, 255)  # Blue
+                    color = (0, 0, 255)  # blue
                 elif event.key == pygame.K_7:
-                    color = (255, 255, 0)  # Yellow
+                    color = (255, 255, 0)  # yellow
                 elif event.key == pygame.K_8:
-                    color = (255, 0, 255)  # Magenta
+                    color = (255, 0, 255)  # magenta
                 elif event.key == pygame.K_9:
-                    color = (0, 255, 255)  # Cyan
+                    color = (0, 255, 255)  # cyan
                 elif event.key == pygame.K_0:
-                    color = (247, 94, 237)  # Default
+                    color = (247, 94, 237)  # default pink
 
         elif event.type == pygame.MOUSEBUTTONDOWN and not text_active:
             if current_tool == "Fill":
                 mx, my = event.pos
                 flood_fill(canvas_surface, mx, my, color)
+                canvas.append({'type': 'Fill', 'pts': (mx, my), 'color': color, 'size': 0})
             elif current_tool == "Text":
                 text_pos = event.pos
                 text_active = True
