@@ -1,4 +1,4 @@
-import pygame, random, json
+import pygame, random, json, psycopg2
 
 pygame.init()
 
@@ -41,6 +41,7 @@ slow_motion = False
 shield = False
 power_up_timer = 0
 power_up_active = None
+player_name = "Player"
 
 foods = []
 power_ups = []
@@ -62,6 +63,47 @@ power_up_types = [
     ('slow_motion', (0, 191, 255), 5),  
     ('shield', (128, 0, 128), 0)  
 ]
+
+def get_db_connection():
+    return psycopg2.connect(
+        host="localhost",
+        database="leaderboard_db",
+        user="postgres",
+        password="12345678"
+    )
+
+def create_table():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS leaderboard (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            score INTEGER NOT NULL,
+            level INTEGER NOT NULL,
+            date DATE DEFAULT CURRENT_DATE
+        )
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def save_score(name, score, level):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO leaderboard (name, score, level, date) VALUES (%s, %s, %s, CURRENT_DATE)", (name, score, level))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def get_leaderboard():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT name, score, level, date FROM leaderboard ORDER BY score DESC LIMIT 10")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
 
 def spawn_food():
     idx = random.choices(range(len(food_types)), weights=weights, k=1)[0]
@@ -157,6 +199,7 @@ while running:
                     running = False
             elif state == GAME_OVER:
                 if 100 < event.pos[0] < 200 and 300 < event.pos[1] < 330:
+                    save_score(player_name, score, level)
                     snake = [(200, 200)]
                     snake_dir = (0, -20)
                     snake_length = 3
@@ -216,7 +259,11 @@ while running:
             if pygame.Rect(new_head[0], new_head[1], 20,20).colliderect(pu_rect):
                 power_up_active = pu["type"]
                 power_up_timer = pygame.time.get_ticks() + pu["duration"] * 1000
-                if pu["type"] == 'shield':
+                if pu["type"] == 'speed_boost':
+                    speed_boost = True
+                elif pu["type"] == 'slow_motion':
+                    slow_motion = True
+                elif pu["type"] == 'shield':
                     shield = True
                 power_ups.remove(pu)
 
@@ -296,8 +343,12 @@ while running:
         font = pygame.font.SysFont(None, 24)
         lb_text = font.render("Leaderboard", True, (255,255,255))
         screen.blit(lb_text, (WIDTH//2 - lb_text.get_width()//2, 20))
-        no_lb_text = font.render("No leaderboard data", True, (255,255,255))
-        screen.blit(no_lb_text, (WIDTH//2 - no_lb_text.get_width()//2, 100))
+        leaderboard = get_leaderboard()
+        y_offset = 60
+        for i, (name, score, level, date) in enumerate(leaderboard):
+            entry_text = font.render(f"{i+1}. {name} - Score: {score} Level: {level} Date: {date}", True, (255,255,255))
+            screen.blit(entry_text, (20, y_offset))
+            y_offset += 30
         draw_button("Back", 150, 350, 100, 30, (200,200,200), (255,255,255))
 
     elif state == SETTINGS:
